@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculadora de IMC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0e12;
+      --surface:   #16181f;
+      --border:    #2a2d38;
+      --accent:    #c8f04e;
+      --accent2:   #4ef0c8;
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --danger:    #f04e4e;
+      --warn:      #f0b24e;
+      --ok:        #4ef07e;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ══════════════════════════════
+       HEADER
+    ══════════════════════════════ */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: .08em;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    header .logo span {
+      color: var(--text);
+      opacity: .55;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      letter-spacing: .04em;
+    }
+
+    header nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    header nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .85rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      transition: color .2s;
+    }
+
+    header nav a:hover { color: var(--accent); }
+
+    header .badge {
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+      padding: .25rem .75rem;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* ══════════════════════════════
+       MAIN
+    ══════════════════════════════ */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.55);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: .06em;
+      line-height: 1;
+      margin-bottom: .35rem;
+    }
+
+    .card-sub {
+      color: var(--muted);
+      font-size: .85rem;
+      margin-bottom: 2rem;
+    }
+
+    /* ── FORM ── */
+    .field {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .45rem;
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: .65rem;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+    }
+
+    .input-wrap input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: .75rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .input-wrap .unit {
+      padding: 0 1rem;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: .05em;
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      border-left: 1px solid var(--border);
+    }
+
+    /* ── BUTTON ── */
+    .btn {
+      width: 100%;
+      padding: .85rem;
+      background: var(--accent);
+      color: #0d0e12;
+      border: none;
+      border-radius: .65rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: .1em;
+      cursor: pointer;
+      margin-top: .5rem;
+      transition: transform .15s, box-shadow .15s, background .15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
+    .btn:active { transform: translateY(0); }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: white;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    .btn:active::after { opacity: .12; }
+
+    /* ── RESULT ── */
+    .result {
+      margin-top: 1.75rem;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      display: none;
+      animation: fadeUp .35s ease;
+    }
+
+    .result.show { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-top {
+      display: flex;
+      align-items: flex-end;
+      gap: .5rem;
+      margin-bottom: .75rem;
+    }
+
+    .result-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.5rem;
+      line-height: 1;
+      transition: color .4s;
+    }
+
+    .result-label {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: .6rem;
+      font-weight: 500;
+    }
+
+    .result-category {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: .03em;
+      transition: color .4s;
+    }
+
+    /* ── SCALE BAR ── */
+    .scale-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #4ef0c8, #c8f04e, #f0b24e, #f04e4e, #c44);
+      margin: 1rem 0 .4rem;
+      position: relative;
+    }
+
+    .scale-marker {
+      position: absolute;
+      top: 50%;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid var(--bg);
+      transform: translate(-50%, -50%);
+      transition: left .5s cubic-bezier(.34,1.56,.64,1);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: .68rem;
+      color: var(--muted);
+    }
+
+    /* ── TABLE ── */
+    .table-toggle {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: .78rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      margin-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      transition: color .2s;
+      padding: 0;
+    }
+    .table-toggle:hover { color: var(--accent); }
+    .table-toggle svg { transition: transform .25s; }
+    .table-toggle.open svg { transform: rotate(180deg); }
+
+    .imc-table {
+      display: none;
+      margin-top: .85rem;
+      border-radius: .65rem;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .imc-table.show { display: block; }
+
+    .imc-table table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .8rem;
+    }
+
+    .imc-table th {
+      background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: .55rem .9rem;
+      text-align: left;
+    }
+
+    .imc-table td {
+      padding: .5rem .9rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .imc-table tr.active td {
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* color helpers */
+    .c-ok   { color: var(--ok);   }
+    .c-warn { color: var(--warn); }
+    .c-bad  { color: var(--danger); }
+    .c-low  { color: var(--accent2); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header>
+  <div class="logo">
+    IMC<span>calculadora</span>
+  </div>
+  <nav>
+    <a href="#">Início</a>
+    <a href="#">Como funciona</a>
+    <a href="#">Saúde</a>
+  </nav>
+  <div class="badge">Grátis</div>
+</header>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main>
+  <div class="card">
+    <h1 class="card-title">Calcule seu IMC</h1>
+    <p class="card-sub">Índice de Massa Corporal — uma referência rápida de saúde.</p>
+
+    <div class="field">
+      <label for="peso">Peso</label>
+      <div class="input-wrap">
+        <input type="number" id="peso" placeholder="Ex: 70" min="1" max="500" step="0.1"/>
+        <span class="unit">KG</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="altura">Altura</label>
+      <div class="input-wrap">
+        <input type="number" id="altura" placeholder="Ex: 1.75" min="0.5" max="3" step="0.01"/>
+        <span class="unit">M</span>
+      </div>
+    </div>
+
+    <button class="btn" onclick="calcular()">Calcular IMC</button>
+
+    <!-- Resultado -->
+    <div class="result" id="result">
+      <div class="result-top">
+        <div class="result-value" id="resultValue">—</div>
+        <div class="result-label">IMC</div>
+      </div>
+      <div class="result-category" id="resultCategory">—</div>
+
+      <div class="scale-bar">
+        <div class="scale-marker" id="scaleMarker" style="left:50%"></div>
+      </div>
+      <div class="scale-labels">
+        <span>Abaixo</span>
+        <span>Normal</span>
+        <span>Sobrepeso</span>
+        <span>Obeso</span>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <button class="table-toggle" id="tableToggle" onclick="toggleTable()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+      Ver tabela de classificação
+    </button>
+
+    <div class="imc-table" id="imcTable">
+      <table>
+        <thead>
+          <tr><th>IMC</th><th>Classificação</th></tr>
+        </thead>
+        <tbody>
+          <tr id="row-baixo"><td>&lt; 18,5</td><td>Abaixo do peso</td></tr>
+          <tr id="row-normal"><td>18,5 – 24,9</td><td>Peso normal</td></tr>
+          <tr id="row-sobre"><td>25,0 – 29,9</td><td>Sobrepeso</td></tr>
+          <tr id="row-ob1"><td>30,0 – 34,9</td><td>Obesidade grau I</td></tr>
+          <tr id="row-ob2"><td>35,0 – 39,9</td><td>Obesidade grau II</td></tr>
+          <tr id="row-ob3"><td>≥ 40,0</td><td>Obesidade grau III</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <style>
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+
+    footer .footer-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: .08em;
+      color: var(--accent);
+    }
+
+    footer .footer-note {
+      font-size: .75rem;
+      color: var(--muted);
+      text-align: center;
+      flex: 1;
+    }
+
+    footer .footer-note strong { color: var(--text); }
+
+    footer .footer-links {
+      display: flex;
+      gap: 1.2rem;
+    }
+
+    footer .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .75rem;
+      transition: color .2s;
+    }
+
+    footer .footer-links a:hover { color: var(--accent); }
+  </style>
+
+  <div class="footer-brand">IMC</div>
+  <p class="footer-note">
+    <strong>Aviso:</strong> Esta ferramenta é apenas informativa e não substitui orientação médica profissional.
+  </p>
+  <div class="footer-links">
+    <a href="#">Privacidade</a>
+    <a href="#">Termos</a>
+    <a href="#">Contato</a>
+  </div>
+</footer>
+
+<script>
+  function calcular() {
+    const peso   = parseFloat(document.getElementById('peso').value);
+    const altura = parseFloat(document.getElementById('altura').value);
+
+    if (!peso || !altura || peso <= 0 || altura <= 0) {
+      shakeCard(); return;
+    }
+
+    const imc = peso / (altura * altura);
+    const imcFmt = imc.toFixed(1).replace('.', ',');
+
+    // Classificação
+    let categoria, colorClass, rowId;
+    if      (imc < 18.5)  { categoria = 'Abaixo do peso';    colorClass = 'c-low';  rowId = 'row-baixo'; }
+    else if (imc < 25)    { categoria = 'Peso normal';       colorClass = 'c-ok';   rowId = 'row-normal'; }
+    else if (imc < 30)    { categoria = 'Sobrepeso';         colorClass = 'c-warn'; rowId = 'row-sobre';  }
+    else if (imc < 35)    { categoria = 'Obesidade grau I';  colorClass = 'c-bad';  rowId = 'row-ob1';    }
+    else if (imc < 40)    { categoria = 'Obesidade grau II'; colorClass = 'c-bad';  rowId = 'row-ob2';    }
+    else                  { categoria = 'Obesidade grau III';colorClass = 'c-bad';  rowId = 'row-ob3';    }
+
+    // Atualiza UI
+    const valEl  = document.getElementById('resultValue');
+    const catEl  = document.getElementById('resultCategory');
+    const result = document.getElementById('result');
+
+    valEl.textContent = imcFmt;
+    valEl.className   = 'result-value ' + colorClass;
+    catEl.textContent = categoria;
+    catEl.className   = 'result-category ' + colorClass;
+
+    // Barra de escala (10 → 45+ mapeado para 0% → 100%)
+    const pct = Math.min(Math.max((imc - 10) / 35 * 100, 2), 98);
+    document.getElementById('scaleMarker').style.left = pct + '%';
+
+    // Destaque na tabela
+    document.querySelectorAll('.imc-table tr').forEach(r => r.classList.remove('active'));
+    const activeRow = document.getElementById(rowId);
+    if (activeRow) activeRow.classList.add('active');
+
+    result.classList.add('show');
+  }
+
+  function toggleTable() {
+    const btn   = document.getElementById('tableToggle');
+    const table = document.getElementById('imcTable');
+    btn.classList.toggle('open');
+    table.classList.toggle('show');
+  }
+
+  function shakeCard() {
+    const card = document.querySelector('.card');
+    card.animate([
+      { transform: 'translateX(0)' },
+      { transform: 'translateX(-8px)' },
+      { transform: 'translateX(8px)' },
+      { transform: 'translateX(-6px)' },
+      { transform: 'translateX(6px)' },
+      { transform: 'translateX(0)' },
+    ], { duration: 380, easing: 'ease-in-out' });
+  }
+
+  // Calcular ao pressionar Enter
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') calcular();
+  });
+</script>
+</body>
+</html>
