@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notas</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue-deep:    #1a3a6b;
+            --blue-mid:     #2563eb;
+            --blue-light:   #3b82f6;
+            --blue-pale:    #dbeafe;
+            --blue-ghost:   #eff6ff;
+            --white:        #ffffff;
+            --gray-soft:    #f8fafc;
+            --gray-line:    #e2e8f0;
+            --gray-text:    #64748b;
+            --text-main:    #1e293b;
+            --shadow-sm:    0 1px 3px rgba(37,99,235,.08), 0 1px 2px rgba(37,99,235,.05);
+            --shadow-md:    0 4px 24px rgba(37,99,235,.10), 0 1px 4px rgba(37,99,235,.07);
+            --shadow-lg:    0 12px 40px rgba(37,99,235,.14);
+            --radius:       14px;
+            --radius-sm:    8px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--gray-soft);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -120px; right: -120px;
+            width: 420px; height: 420px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #dbeafe 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -80px; left: -80px;
+            width: 320px; height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #eff6ff 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 22px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 480px;
+            padding: 2.6rem 2.8rem 2.4rem;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(219,234,254,.6);
+            animation: fadeUp .5s cubic-bezier(.22,.68,0,1.2) both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%; transform: translateX(-50%);
+            width: 64px; height: 4px;
+            background: linear-gradient(90deg, var(--blue-mid), var(--blue-light));
+            border-radius: 0 0 4px 4px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.2rem;
+        }
+
+        header .label {
+            font-size: .72rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--blue-mid);
+            font-weight: 500;
+            margin-bottom: .4rem;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9rem;
+            color: var(--blue-deep);
+            letter-spacing: -.01em;
+            line-height: 1.15;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--gray-line);
+            margin: 0 0 1.8rem;
+        }
+
+        .section-title {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--gray-text);
+            font-weight: 600;
+            margin-bottom: .85rem;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+            margin-bottom: 1.6rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: .28rem;
+        }
+
+        label {
+            font-size: .8rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        input {
+            width: 100%;
+            padding: .6rem .85rem;
+            border: 1.5px solid var(--gray-line);
+            border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .88rem;
+            color: var(--text-main);
+            background: var(--white);
+            outline: none;
+            transition: border-color .18s, box-shadow .18s, background .18s;
+        }
+
+        input::placeholder { color: #b0bec5; }
+
+        input.error {
+            border-color: #f87171 !important;
+            box-shadow: 0 0 0 3px rgba(248,113,113,.13) !important;
+            background: #fff5f5 !important;
+        }
+
+        .field-error {
+            font-size: .72rem;
+            color: #dc2626;
+            font-weight: 500;
+            min-height: 1rem;
+            display: block;
+            visibility: hidden;
+        }
+
+        .field-error.visible { visibility: visible; }
+
+        input:focus {
+            border-color: var(--blue-light);
+            box-shadow: 0 0 0 3px rgba(59,130,246,.13);
+            background: var(--blue-ghost);
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem;
+            margin-bottom: 1.6rem;
+        }
+
+        .note-card {
+            background: var(--gray-soft);
+            border: 1.5px solid var(--gray-line);
+            border-radius: var(--radius-sm);
+            padding: .65rem .85rem .4rem;
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+            transition: border-color .18s, box-shadow .18s;
+        }
+
+        .note-card.error-card {
+            border-color: #f87171 !important;
+            background: #fff5f5 !important;
+        }
+
+        .note-card:focus-within {
+            border-color: var(--blue-light);
+            box-shadow: 0 0 0 3px rgba(59,130,246,.10);
+            background: var(--blue-ghost);
+        }
+
+        .note-card label {
+            font-size: .72rem;
+            color: var(--blue-mid);
+            font-weight: 600;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        .note-card input {
+            border: none;
+            padding: 0;
+            background: transparent;
+            font-size: 1.05rem;
+            font-weight: 500;
+            box-shadow: none;
+        }
+
+        .note-card input:focus {
+            border: none;
+            box-shadow: none;
+            background: transparent;
+        }
+
+        .note-card .field-error {
+            font-size: .65rem;
+        }
+
+        .note-card.full {
+            grid-column: 1 / -1;
+        }
+
+        .btn {
+            width: 100%;
+            padding: .8rem;
+            background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem;
+            font-weight: 600;
+            letter-spacing: .03em;
+            cursor: pointer;
+            transition: opacity .18s, transform .14s, box-shadow .18s;
+            box-shadow: 0 4px 16px rgba(37,99,235,.25);
+            margin-top: .3rem;
+        }
+
+        .btn:hover {
+            opacity: .92;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(37,99,235,.32);
+        }
+
+        .btn:active { transform: translateY(0); opacity: 1; }
+
+        .result-wrap {
+            margin-top: 1.4rem;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height .45s cubic-bezier(.22,.68,0,1.1);
+        }
+
+        .result-wrap.visible { max-height: 280px; }
+
+        .result-box {
+            background: linear-gradient(135deg, var(--blue-ghost) 0%, #e0eeff 100%);
+            border: 1.5px solid var(--blue-pale);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.4rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .55rem 1.2rem;
+        }
+
+        .result-item { display: flex; flex-direction: column; gap: .15rem; }
+
+        .result-item .r-label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--blue-mid);
+            font-weight: 600;
+        }
+
+        .result-item .r-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--blue-deep);
+        }
+
+        .result-item.highlight .r-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: .15rem .6rem;
+            border-radius: 999px;
+            font-size: .8rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+
+        .badge-aprovado { background: #d1fae5; color: #065f46; }
+        .badge-reprovado { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <header>
+            <p class="label">Sistema Acadêmico</p>
+            <h1>Lançamento de Notas</h1>
+        </header>
+        <div class="divider"></div>
+
+        <p class="section-title">Identificação</p>
+        <div class="field-group">
+            <div class="field">
+                <label for="RA">RA do Aluno</label>
+                <input type="text" id="RA" placeholder="Ex: 12345678"
+                    oninput="this.value=this.value.replace(/\D/g,'').slice(0,8); clearError('RA', this)">
+                <span class="field-error" id="err-RA"></span>
+            </div>
+            <div class="field">
+                <label for="Nome">Nome Completo</label>
+                <input type="text" id="Nome" placeholder="Ex: João da Silva"
+                    oninput="clearError('Nome', this)">
+                <span class="field-error" id="err-Nome"></span>
+            </div>
+        </div>
+
+        <p class="section-title">Notas</p>
+        <div class="notes-grid">
+            <div class="note-card" id="card-nota1">
+                <label for="nota1">Nota 1</label>
+                <input type="number" id="nota1" min="0" max="10" step="0.1" placeholder="0.0"
+                    oninput="if(this.value>10)this.value=10;if(this.value<0)this.value=0; clearNoteError('nota1')">
+                <span class="field-error" id="err-nota1"></span>
+            </div>
+            <div class="note-card" id="card-nota2">
+                <label for="nota2">Nota 2 <span style="opacity:.6;font-size:.65rem">(x2)</span></label>
+                <input type="number" id="nota2" min="0" max="10" step="0.1" placeholder="0.0"
+                    oninput="if(this.value>10)this.value=10;if(this.value<0)this.value=0; clearNoteError('nota2')">
+                <span class="field-error" id="err-nota2"></span>
+            </div>
+            <div class="note-card" id="card-nota3">
+                <label for="nota3">Nota 3 <span style="opacity:.6;font-size:.65rem">(x3)</span></label>
+                <input type="number" id="nota3" min="0" max="10" step="0.1" placeholder="0.0"
+                    oninput="if(this.value>10)this.value=10;if(this.value<0)this.value=0; clearNoteError('nota3')">
+                <span class="field-error" id="err-nota3"></span>
+            </div>
+            <div class="note-card" id="card-nota4">
+                <label for="nota4">Nota 4 <span style="opacity:.6;font-size:.65rem">(x4)</span></label>
+                <input type="number" id="nota4" min="0" max="10" step="0.1" placeholder="0.0"
+                    oninput="if(this.value>10)this.value=10;if(this.value<0)this.value=0; clearNoteError('nota4')">
+                <span class="field-error" id="err-nota4"></span>
+            </div>
+            <div class="note-card full" id="card-notaEX">
+                <label for="notaEX">Nota de Exercicios</label>
+                <input type="number" id="notaEX" min="0" max="10" step="0.1" placeholder="0.0"
+                    oninput="if(this.value>10)this.value=10;if(this.value<0)this.value=0; clearNoteError('notaEX')">
+                <span class="field-error" id="err-notaEX"></span>
+            </div>
+        </div>
+
+        <button class="btn" onclick="calcularMA()">Calcular Média</button>
+
+        <div class="result-wrap" id="resultWrap">
+            <div class="result-box" id="resultado"></div>
+        </div>
+    </div>
+
+    <script>
+        function showError(id, msg, inputEl) {
+            const span = document.getElementById('err-' + id);
+            if (span) { span.textContent = msg; span.classList.add('visible'); }
+            if (inputEl) inputEl.classList.add('error');
+        }
+
+        function clearError(id, inputEl) {
+            const span = document.getElementById('err-' + id);
+            if (span) { span.textContent = ''; span.classList.remove('visible'); }
+            if (inputEl) inputEl.classList.remove('error');
+        }
+
+        function clearNoteError(id) {
+            const span = document.getElementById('err-' + id);
+            if (span) { span.textContent = ''; span.classList.remove('visible'); }
+            const card = document.getElementById('card-' + id);
+            if (card) card.classList.remove('error-card');
+        }
+
+        function showNoteError(id, msg) {
+            const span = document.getElementById('err-' + id);
+            if (span) { span.textContent = msg; span.classList.add('visible'); }
+            const card = document.getElementById('card-' + id);
+            if (card) card.classList.add('error-card');
+        }
+
+        function calcularMA() {
+            let valid = true;
+
+            const raInput = document.getElementById("RA");
+            const nomeInput = document.getElementById("Nome");
+            const ra = raInput.value.trim();
+            const nome = nomeInput.value.trim();
+
+            clearError('RA', raInput);
+            clearError('Nome', nomeInput);
+            ['nota1','nota2','nota3','nota4','notaEX'].forEach(id => clearNoteError(id));
+
+            if (!ra) {
+                showError('RA', 'O RA é obrigatório.', raInput);
+                valid = false;
+            } else if (ra.length > 8) {
+                showError('RA', 'O RA deve ter no máximo 8 algarismos.', raInput);
+                valid = false;
+            }
+
+            if (!nome) {
+                showError('Nome', 'O nome é obrigatório.', nomeInput);
+                valid = false;
+            }
+
+            const noteIds = ['nota1','nota2','nota3','nota4','notaEX'];
+            const noteLabels = ['Nota 1','Nota 2','Nota 3','Nota 4','Nota de Exercícios'];
+            let noteValues = [];
+
+            noteIds.forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el.value === '') {
+                    showNoteError(id, noteLabels[i] + ' é obrigatória.');
+                    valid = false;
+                    noteValues.push(0);
+                } else {
+                    noteValues.push(parseFloat(el.value));
+                }
+            });
+
+            if (!valid) return;
+
+            let [n1, n2, n3, n4, nex] = noteValues;
+            let MA = (n1 + n2*2 + n3*3 + n4*4 + nex) / 11;
+
+            let conceito = MA>=9?"A": MA>=7.5?"B": MA>=6?"C": MA>=4?"D":"E";
+            let aprovado = MA >= 6;
+            let condicao = aprovado ? "Aprovado" : "Reprovado";
+            let badgeClass = aprovado ? "badge badge-aprovado" : "badge badge-reprovado";
+
+            document.getElementById("resultado").innerHTML =
+                '<div class="result-item"><span class="r-label">RA</span><span class="r-value">' + ra + '</span></div>' +
+                '<div class="result-item"><span class="r-label">Condicao</span><span class="r-value"><span class="' + badgeClass + '">' + condicao + '</span></span></div>' +
+                '<div class="result-item" style="grid-column:1/-1"><span class="r-label">Nome</span><span class="r-value">' + nome + '</span></div>' +
+                '<div class="result-item highlight"><span class="r-label">Media (MA)</span><span class="r-value">' + MA.toFixed(2) + '</span></div>' +
+                '<div class="result-item highlight"><span class="r-label">Conceito</span><span class="r-value">' + conceito + '</span></div>';
+
+            const wrap = document.getElementById("resultWrap");
+            wrap.classList.add("visible");
+        }
+    </script>
+</body>
+</html>
