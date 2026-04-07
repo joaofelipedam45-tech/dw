@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estacionamento</title>
+  <link rel="stylesheet" href="estacionamento.css">
+</head>
+<body>
+
+  <header>
+    <span class="logo">🅿 Estacionamento</span>
+    <span class="badge">Sistema de Tarifas</span>
+  </header>
+
+  <main>
+    <div class="card">
+
+      <h1>Estacionamento</h1>
+
+      <label for="Tempo">Tempo:</label>
+      <input type="number" id="Tempo" min="0" placeholder="Tempo em horas">
+
+      <label for="tamanho">Tamanho do carro:</label>
+      <select id="tamanho">
+        <option value="Pequeno">Pequeno</option>
+        <option value="Grande">Grande</option>
+      </select>
+
+      <label for="fidelidade">Cliente frequente?</label>
+      <select id="fidelidade">
+        <option value="sim">Sim</option>
+        <option value="nao">Não</option>
+      </select>
+
+      <button type="button" onclick="calcularTarifa()">Calcular Tarifa</button>
+      <p id="resultado"></p>
+
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 Estacionamento — Todos os direitos reservados
+  </footer>
+
+  <script src="estacionamento.js"></script>
+</body>
+</html>
