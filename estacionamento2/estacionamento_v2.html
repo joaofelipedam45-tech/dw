@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estacionamento</title>
+  <link rel="stylesheet" href="estacionamento_v2.css">
+</head>
+<body>
+
+  <header>
+    <span class="logo">🅿 Estacionamento</span>
+    <span class="badge">Sistema de Tarifas</span>
+  </header>
+
+  <main>
+    <div class="card">
+
+      <h1>Estacionamento</h1>
+
+      <label for="checkin">📅 Entrada (data e hora):</label>
+      <input type="datetime-local" id="checkin">
+
+      <label for="checkout">📅 Saída (data e hora):</label>
+      <input type="datetime-local" id="checkout">
+
+      <label for="tamanho">🚗 Tamanho do carro:</label>
+      <select id="tamanho">
+        <option value="Pequeno">Pequeno</option>
+        <option value="Grande">Grande</option>
+      </select>
+
+      <label for="fidelidade">⭐ Cliente frequente?</label>
+      <select id="fidelidade">
+        <option value="sim">Sim</option>
+        <option value="nao">Não</option>
+      </select>
+
+      <button type="button" onclick="calcularTarifa()">Calcular Tarifa</button>
+
+      <div id="resultado"></div>
+
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 Estacionamento — Todos os direitos reservados
+  </footer>
+
+  <script src="estacionamento_v2.js"></script>
+</body>
+</html>
